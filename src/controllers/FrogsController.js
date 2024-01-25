@@ -15,6 +15,7 @@ export class FrogsController extends BaseController{
     .get('', this.getAllFrogs)
     .get('/search', this.searchFrogs)
     .get('/age', this.getFrogsByAge)
+    .get('/pages', this.getPagesOfFrogs)
   }
 
   async createFrog(req, res, next){
@@ -49,6 +50,15 @@ export class FrogsController extends BaseController{
     try {
       const frogs = await frogsService.getFrogsByAge(req.query)
       res.send(frogs)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getPagesOfFrogs(req, res, next){
+    try {
+      const results = await frogsService.getPagesOfFrogs(req.query)
+      res.send(results)
     } catch (error) {
       next(error)
     }

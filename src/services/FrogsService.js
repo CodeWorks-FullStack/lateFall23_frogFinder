@@ -4,6 +4,23 @@ import { dbContext } from "../db/DbContext.js"
 
 
 class FrogsService{
+  async getPagesOfFrogs(query) {
+    const rgxLikes = new RegExp(query.likes, 'ig')
+    const filter = {likes: {$regex: rgxLikes}}
+    // NOTE code for paginated Response
+    // const qLimit = query.limit ? query.limit < 13 ? query.limit : 13 : 3
+    const qLimit = query.limit || 3
+    const page = query.page || 1
+    const frogCount = await dbContext.Frogs.countDocuments(filter)
+    const frogs = await dbContext.Frogs.find(filter).limit(qLimit).skip(qLimit * (page -1))
+    const results = {
+      frogs,
+      totalFrogs: frogCount,
+      page: parseInt(page),
+      totalPages: Math.ceil(frogCount /qLimit)
+    }
+    return results
+  }
   async getFrogsByAge(query) {
     query.lt = query.lt? query.lt : Infinity
     query.gt = query.gt? query.gt : 0
